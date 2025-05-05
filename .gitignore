@@ -36,6 +36,12 @@ ENV/
 env.bak/
 venv.bak/
 
+
+
+
+secrets.json
+credentials.json
+
 # IDE
 .idea/
 .vscode/
