@@ -1,0 +1,581 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ prodotto.nome }} | Mondaini Boutique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'boutique': {
+                            'light': '#f8f5f1',
+                            'dark': '#2c2c2c',
+                            'accent': '#d4af37',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ... il tuo CSS esistente ... */
+            
+        .size-option .rotate-45 {
+            transition: all 0.3s ease;
+        }
+        
+        .size-option:hover .rotate-45 {
+            opacity: 0.8;
+        }
+    
+        .product-image-zoom {
+            transition: transform 0.5s ease;
+        }
+        .product-image-zoom:hover {
+            transform: scale(1.05);
+        }
+        .carousel-fade .carousel-item {
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+        .carousel-fade .carousel-item.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-boutique-light font-sans">
+    <header class="py-4 px-6 border-b border-gray-200">
+        <div class="container mx-auto">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'index' %}" class="flex items-center">
+                    <img src="{% static 'images/LogoSito.png' %}" alt="Mondaini Boutique" class="h-12 w-auto">
+                    <span class="ml-3 text-2xl font-serif font-medium text-boutique-dark hidden md:block">Mondaini Boutique</span>
+                </a>
+               
+                <a href="{% url 'carrello' %}" class="text-boutique-dark hover:text-boutique-accent transition-colors"><i class="fas fa-shopping-cart"></i> </a>
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sezione Prodotto -->
+    <main class="container mx-auto py-12 px-4">
+        <div class="flex flex-col lg:flex-row gap-12">
+            <!-- Carosello Immagini Prodotto -->
+            <div class="w-full lg:w-3/5 overflow-hidden rounded-xl shadow-lg">
+                <div id="productCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+                    {% if immagini %}
+                        <div class="carousel-inner rounded-xl">
+                            {% for immagine in immagini %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %} bg-white">
+                                <img src="{{ immagine.image.url }}" class="d-block w-full h-[500px] object-contain product-image-zoom" alt="{{ immagine.image.name }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        
+                        
+                        <!-- Thumbnail Navigation -->
+                        <div class="flex justify-center mt-4 gap-2">
+                            {% for immagine in immagini %}
+                            <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %} w-16 h-16 rounded-md overflow-hidden border-2 {% if forloop.first %}border-boutique-accent{% else %}border-transparent{% endif %} hover:border-boutique-accent transition-all duration-300 focus:outline-none">
+                                <img src="{{ immagine.image.url }}" class="w-full h-full object-cover" alt="Thumbnail">
+                            </button>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="flex items-center justify-center h-[500px] bg-gray-100 rounded-xl">
+                            <p class="text-gray-500 italic">Nessuna immagine disponibile</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Product Details -->
+            <div class="w-full lg:w-2/5">
+                <nav class="flex text-sm mb-6" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{% url 'index' %}" class="text-gray-500 hover:text-boutique-accent">Home</a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                                <a href="#" class="text-gray-500 hover:text-boutique-accent">Collezione</a>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div class="flex items-center">
+                                <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                                <span class="text-gray-700 font-medium">{{ prodotto.nome }}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                
+                <h1 class="font-serif text-3xl md:text-4xl font-bold text-boutique-dark mb-4">{{ prodotto.nome }}</h1>
+                
+                <div class="text-2xl font-medium text-boutique-dark mb-6">
+                    <span class="font-serif">€ {{ prodotto.prezzo }}</span>
+                </div>
+                
+                <div class="prose prose-sm text-gray-600 mb-8">
+                    <p>{{ prodotto.descrizione }}</p>
+                </div>
+                
+                <!-- Selezione Taglia -->
+
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Taglie</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for taglia in taglie_info %}
+                        <label class="size-option relative {% if not taglia.disponibile %}cursor-not-allowed{% endif %}">
+                            <input type="radio" 
+                                   name="taglia_id" 
+                                   value="{{ taglia.taglia.id }}" 
+                                   class="sr-only peer"
+                                   {% if not taglia.disponibile %}disabled{% endif %}>
+                            <span class="flex items-center justify-center h-10 w-10 border 
+                                       {% if taglia.disponibile %}
+                                           border-gray-300 cursor-pointer peer-checked:bg-boutique-dark peer-checked:text-white peer-checked:border-boutique-dark hover:bg-gray-100
+                                       {% else %}
+                                           border-gray-200 bg-gray-100 text-gray-400 relative overflow-hidden
+                                       {% endif %}
+                                       rounded-md text-sm font-medium transition-colors">
+                                {{ taglia.taglia.nome }}
+                                {% if not taglia.disponibile %}
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-full h-[1px] bg-gray-400 rotate-45 transform origin-center"></div>
+                                </div>
+                                {% endif %}
+                            </span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button class="flex-1 bg-boutique-dark text-white py-3 px-6 rounded-md hover:bg-black transition-colors duration-300 flex items-center justify-center" data-product-id="{{ prodotto.id }}" onclick="addToCart({{ prodotto.id }})">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        <span>Aggiungi al Carrello</span>
+                    </button>
+                </div>
+                
+                <!-- Additional Info -->
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-truck mr-2"></i>
+                        <span>Spedizione gratuita per ordini superiori a €100</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-undo mr-2"></i>
+                        <span>Resi gratuiti entro 30 giorni</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        <span>Pagamento sicuro garantito</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Details Tabs -->
+        <div class="mt-16">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px space-x-8" aria-label="Tabs">
+                    <button class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 border-b-2 font-medium text-sm tab-button" data-tab="description">
+                        Descrizione
+                    </button>
+                    <button class="border-boutique-accent text-boutique-accent py-4 px-1 border-b-2 font-medium text-sm tab-button" data-tab="reviews" aria-current="page">
+                        Recensioni ({{ numero_recensioni }})
+                    </button>
+                </nav>
+            </div>
+
+            <div class="py-6">
+        <!-- Descrizione Tab -->
+        <div id="description-tab" class="tab-content hidden">
+            <div class="prose max-w-none">
+                <p>{{ prodotto.descrizione }}</p>
+            </div>
+        </div>
+
+        <!-- Recensioni Tab -->
+        <div id="reviews-tab" class="tab-content">
+            <!-- Valutazione Media -->
+            <div class="mb-8">
+                <div class="flex items-center mb-2">
+                    <div class="text-4xl font-bold text-boutique-dark mr-4">{{ media_valutazioni }}</div>
+                    <div>
+                        <div class="flex text-boutique-accent mb-1">
+                            {% for i in "12345"|make_list %}
+                            <i class="fas fa-star {% if forloop.counter <= media_valutazioni %}text-boutique-accent{% else %}text-gray-300{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="text-sm text-gray-500">Basato su {{ numero_recensioni }} recensioni</p>
+                    </div>
+                </div>
+            </div>  
+            
+            <!-- Form Recensione -->
+            {% if user.is_authenticated and not ha_recensito %}
+            <div class="mb-8 p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                <h3 class="text-lg font-medium text-boutique-dark mb-4">Scrivi una recensione</h3>
+                <form id="recensione-form" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">La tua valutazione</label>
+                        <div class="flex space-x-2 text-2xl star-rating">
+                            {% for i in "12345"|make_list %}
+                            <i class="fas fa-star cursor-pointer text-gray-300 hover:text-boutique-accent transition-colors" data-rating="{{ forloop.counter }}"></i>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="valutazione" id="valutazione-input" required>
+                    </div>
+                    <div>
+                        <label for="commento" class="block text-sm font-medium text-gray-700 mb-2">Il tuo commento</label>
+                        <textarea id="commento" name="commento" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-boutique-accent focus:border-transparent" required></textarea>
+                    </div>
+                    <button type="submit" class="bg-boutique-dark text-white py-2 px-4 rounded-md hover:bg-black transition-colors">
+                        Pubblica recensione
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Lista Recensioni -->
+            <div class="space-y-6" id="recensioni-lista">
+                {% for recensione in recensioni %}
+                <div class="border-b border-gray-200 pb-6 last:border-b-0">
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-boutique-accent mr-2">
+                            {% for i in "12345"|make_list %}
+                            <i class="fas fa-star {% if forloop.counter <= recensione.valutazione %}text-boutique-accent{% else %}text-gray-300{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-500">{{ recensione.data_creazione|date:"d/m/Y" }}</span>
+                    </div>
+                    <p class="font-medium text-boutique-dark mb-1">{{ recensione.utente.username }}</p>
+                    <p class="text-gray-600">{{ recensione.commento }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 italic">Non ci sono ancora recensioni per questo prodotto.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-boutique-dark text-white mt-16 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-serif text-xl mb-4">Mondaini Boutique</h3>
+                    <p class="text-gray-400 text-sm">La tua destinazione per la moda di lusso e l'eleganza senza tempo.</p>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">Informazioni</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Chi Siamo</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contatti</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Termini e Condizioni</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">Servizio Clienti</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Spedizioni</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Resi e Rimborsi</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Traccia Ordine</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium mb-4">Newsletter</h4>
+                    <p class="text-sm text-gray-400 mb-4">Iscriviti per ricevere aggiornamenti sulle nuove collezioni e offerte esclusive.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="La tua email" class="px-4 py-2 w-full rounded-l-md focus:outline-none text-boutique-dark">
+                        <button type="submit" class="bg-boutique-accent text-white px-4 py-2 rounded-r-md hover:bg-opacity-90 transition-colors">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-400">© 2023 Mondaini Boutique. Tutti i diritti riservati.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+        
+            function switchTab(tabId) {
+                tabButtons.forEach(button => {
+                    if (button.dataset.tab === tabId) {
+                        button.classList.add('border-boutique-accent', 'text-boutique-accent');
+                        button.classList.remove('border-transparent', 'text-gray-500');
+                    } else {
+                        button.classList.remove('border-boutique-accent', 'text-boutique-accent');
+                        button.classList.add('border-transparent', 'text-gray-500');
+                    }
+                });
+        
+                tabContents.forEach(content => {
+                    if (content.id === `${tabId}-tab`) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            }
+        
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => switchTab(button.dataset.tab));
+            });
+        
+            // Star rating
+            const stars = document.querySelectorAll('.star-rating .fa-star');
+            const valutazioneInput = document.getElementById('valutazione-input');
+        
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.dataset.rating);
+                    valutazioneInput.value = rating;
+                    
+                    stars.forEach(s => {
+                        const sRating = parseInt(s.dataset.rating);
+                        if (sRating <= rating) {
+                            s.classList.add('text-boutique-accent');
+                            s.classList.remove('text-gray-300');
+                        } else {
+                            s.classList.remove('text-boutique-accent');
+                            s.classList.add('text-gray-300');
+                        }
+                    });
+                });
+            });
+        
+            // Form submission
+            const recensioneForm = document.getElementById('recensione-form');
+            if (recensioneForm) {
+                recensioneForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+        
+                    if (!valutazioneInput.value) {
+                        alert('Seleziona una valutazione');
+                        return;
+                    }
+        
+                    const formData = new FormData(this);
+                    
+                    fetch("{% url 'aggiungi_recensione' prodotto.id %}", {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Mostra messaggio di successo
+                            const successMessage = document.createElement('div');
+                            successMessage.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50 flex items-center';
+                            successMessage.innerHTML = `
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span>Recensione aggiunta con successo!</span>
+                                <button class="ml-4 text-green-700 hover:text-green-900" onclick="this.parentElement.remove()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            document.body.appendChild(successMessage);
+                            
+                            // Ricarica la pagina dopo 2 secondi
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Errore:', error);
+                        alert('Si è verificato un errore. Riprova.');
+                    });
+                });
+            }
+        
+            // Inizializza con il tab delle recensioni attivo
+            switchTab('reviews');
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Quantity selector
+            const quantityInput = document.getElementById('quantity');
+            const decreaseBtn = document.getElementById('decrease-quantity');
+            const increaseBtn = document.getElementById('increase-quantity');
+            
+            decreaseBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            increaseBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+            
+            // Carousel navigation
+            const thumbnails = document.querySelectorAll('[data-bs-target="#productCarousel"]');
+            thumbnails.forEach(thumb => {
+                thumb.addEventListener('click', function() {
+                    // Remove active class from all thumbnails
+                    thumbnails.forEach(t => t.classList.remove('border-boutique-accent'));
+                    // Add active class to clicked thumbnail
+                    this.classList.add('border-boutique-accent');
+                    
+                    // Get slide index
+                    const slideIndex = this.getAttribute('data-bs-slide-to');
+                    
+                    // Get all carousel items
+                    const carouselItems = document.querySelectorAll('.carousel-item');
+                    
+                    // Remove active class from all items
+                    carouselItems.forEach(item => item.classList.remove('active'));
+                    
+                    // Add active class to target item
+                    carouselItems[slideIndex].classList.add('active');
+                });
+            });
+        });
+
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+
+        // Funzione per aggiungere il prodotto al carrello
+        function addToCart(productId) {
+            // Get selected size
+            const sizeInputs = document.querySelectorAll('input[name="taglia_id"]');
+            let selectedSize = '';
+            for (const input of sizeInputs) {
+                if (input.checked) {
+                    selectedSize = input.value;
+                    break;
+                }
+            }
+        
+            // Controllo se la taglia è stata selezionata
+            if (!selectedSize) {
+                alert("Seleziona una taglia!");
+                return;  // Ferma la funzione se la taglia non è selezionata
+            }
+        
+        
+            // Mostra stato di caricamento
+            const addToCartBtn = document.querySelector('[data-product-id="' + productId + '"]');
+            const originalText = addToCartBtn.innerHTML;
+            addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Aggiungendo...</span>';
+        
+            // Log dei dati per il debug
+            console.log("Dati inviati al server:", {
+                product_id: productId,
+                size: selectedSize,
+            });
+        
+            // Invia i dati al server tramite Ajax
+            fetch("{% url 'add_to_cart' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify({ 
+                    product_id: productId,
+                    taglia_id: selectedSize,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Ripristina lo stato del pulsante
+                addToCartBtn.innerHTML = originalText;
+        
+                if (data.success) {
+                    // Mostra messaggio di successo
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50 flex items-center';
+                    successMessage.innerHTML = `
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>Prodotto aggiunto al carrello!</span>
+                        <button class="ml-4 text-green-700 hover:text-green-900" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.body.appendChild(successMessage);
+                    
+                    // Rimuove il messaggio dopo 3 secondi
+                    setTimeout(() => {
+                        successMessage.remove();
+                    }, 3000);
+                } else {
+                    alert('Errore: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Errore:', error);
+                addToCartBtn.innerHTML = originalText;
+                alert('Si è verificato un errore. Riprova.');
+            });
+        }
+        
+        
+    </script>
+</body>
+</html>

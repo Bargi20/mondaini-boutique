@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}I Più Venduti | Mondaini Boutique{% endblock %}
+
+{%block extra_css%}
+<link rel="stylesheet" href="{% static 'css/i_piu_venduti.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+
+    <!-- page header start -->
+    <div class="page-header">
+        <div class="container">
+            <h1>I Nostri Prodotti Più Venduti</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">I Più Venduti</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- page header end -->
+
+    <!-- bestsellers section start -->
+    <section class="bestsellers-section">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>Scopri i Nostri Best Seller</h2>
+                <p>I prodotti più amati dai nostri clienti</p>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Tutti</button>
+                    <button class="filter-btn" data-filter="uomo">Uomo</button>
+                    <button class="filter-btn" data-filter="donna">Donna</button>
+                    <button class="filter-btn" data-filter="bambino">Bambino</button>
+                </div>
+            </div>
+
+            <div class="row">
+                {% if prodotti %}
+                    {% for prodotto in prodotti %}
+                    <div class="col-lg-4 col-md-6 col-sm-12 product-item" data-category="{{ prodotto.tipo }}">
+                        <div class="product-card">
+                            {% if forloop.counter <= 3 %}
+                            <div class="bestseller-badge">Best Seller</div>
+                            {% endif %}
+                            <div class="bestseller-rank">{{ forloop.counter }}</div>
+                            <div class="product-img">
+                                {% if prodotto.images.exists %}
+                                <img src="{{ prodotto.images.first.image.url }}" alt="{{ prodotto.nome }}" class="img-fluid">
+                                {% else %}
+                                <div style="height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image" style="font-size: 50px; color: #ddd;"></i>
+                                </div>
+                                {% endif %}
+                                <div class="product-actions">
+                                    <a href="{% url 'dettaglio_prodotto' prodotto_id=prodotto.id %}" class="view-details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <div>
+                                    <h3 class="product-name">{{ prodotto.nome }}</h3>
+                                    <div class="product-category">{{ prodotto.get_categoria_display }} | {{ prodotto.get_tipo_display }}</div>
+                                    <div class="sales-count">
+                                        <i class="fas fa-shopping-bag"></i> {{ prodotto.conteggio_acquisti }} venduti
+                                    </div>
+                                </div>
+                                <div class="product-price">€ {{ prodotto.prezzo }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="no-products">
+                            <i class="fas fa-box-open"></i>
+                            <p>Non ci sono ancora prodotti venduti.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <!-- bestsellers section end -->
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "300px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+        // Back to top button
+        const backToTopButton = document.getElementById("backToTop");
+        
+        window.addEventListener("scroll", () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add("show");
+            } else {
+                backToTopButton.classList.remove("show");
+            }
+        });
+        
+        backToTopButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        
+        // Filtro prodotti
+        $(document).ready(function() {
+            $('.filter-btn').on('click', function() {
+                const filter = $(this).data('filter');
+                
+                // Aggiorna classe attiva
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                // Filtra prodotti
+                if (filter === 'all') {
+                    $('.product-item').show();
+                } else {
+                    $('.product-item').hide();
+                    $(`.product-item[data-category="${filter}"]`).show();
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+</body>

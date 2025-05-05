@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrello | Mondaini Botique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.5/js.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Il Tuo Carrello</h1>
+
+        <!-- Cart Items -->
+        <div class="bg-white shadow-lg rounded-xl p-6 mb-8" id="cart-container">
+            {% for product in cart_products %}
+            <div class="flex flex-col md:flex-row items-center justify-between border-b pb-6 mb-6 gap-4 transition-all duration-300 hover:bg-gray-50" data-product-id="{{ product.product_id }}" data-taglia-id="{{ product.taglia_id }}">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="relative">
+                        <img src="{{ product.image_url }}" alt="{{ product.nome }}" class="w-24 h-32 object-cover rounded-lg shadow">
+                        <span class="absolute -top-2 -right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">{{ product.category }}</span>
+                    </div>
+                    <div class="ml-0 md:ml-6 text-center md:text-left mt-3 md:mt-0">
+                        <h2 class="text-xl font-semibold text-gray-800">{{ product.nome }}</h2>
+                        <h2 class="text-xl font-semibold text-gray-800">{{ product.taglia_nome }}</h2>
+
+                        <p class="text-sm text-gray-500 mt-1">{{ product.categoria }}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center">
+                        <label for="quantity-{{ product.taglia.quantita }}" class="sr-only">Quantità</label>
+                        <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                            <button class="px-3 py-1 bg-gray-100 hover:bg-gray-200 quantity-btn" data-action="decrease">
+                                <i class="fas fa-minus text-gray-600 text-xs"></i>
+                            </button>
+                            <input 
+                                type="number" 
+                                name="quantity" 
+                                id="quantity-{{ product.product_id }}-{{ product.taglia.id }}" 
+                                value="{{ product.quantity }}" 
+                                min="1"
+                                class="w-12 border-0 text-center py-1 quantity-input focus:ring-0 focus:outline-none">
+                            <button class="px-3 py-1 bg-gray-100 hover:bg-gray-200 quantity-btn" data-action="increase">
+                                <i class="fas fa-plus text-gray-600 text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="text-gray-400 hover:text-red-600 transition-colors duration-300 remove-button">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8">
+                <i class="fas fa-shopping-bag text-5xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500">Il tuo carrello è vuoto</p>
+                <a href="{% url 'index' %}" class="inline-block mt-4 text-white bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-lg transition-colors duration-300">Inizia lo Shopping</a>
+            </div>
+            {% endfor %}
+
+            <!-- Cart Summary -->
+            {% if cart_products %}
+            <div class="mt-8 border-t pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <a href="{% url 'index' %}" class="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span>Continua lo Shopping</span>
+                    </a>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg w-full md:w-auto">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Subtotale:</span>
+                            <span class="font-medium">€<span id="cart-subtotal">{{ cart_total }}</span></span>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-gray-600">Spedizione:</span>
+                            <span class="font-medium text-green-600">Gratuita</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t pt-2 text-lg font-bold">
+                            <span>Totale:</span>
+                            <span>€<span id="cart-total">{{ cart_total }}</span></span>
+                        </div>
+                        
+                        <form method="post" action="/checkout/" class="mt-4">
+                            {% csrf_token %}
+                            <button class="w-full bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                                <span>Procedi al Checkout</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        
+        $(document).ready(function () {
+            // Quantity buttons functionality
+            $('.quantity-btn').on('click', function(e) {
+                e.preventDefault();
+                const input = $(this).closest('.flex').find('.quantity-input');
+                const currentVal = parseInt(input.val());
+                
+                if ($(this).data('action') === 'decrease') {
+                    if (currentVal > 1) input.val(currentVal - 1).trigger('change');
+                } else {
+                    input.val(currentVal + 1).trigger('change');
+                }
+            });
+            
+            // Quantity input change event
+            $('.quantity-input').on('change', function () {
+                const productRow = $(this).closest('[data-product-id]');
+                const productId = productRow.data('product-id');
+                const tagliaId = productRow.data('taglia-id'); // ID della taglia
+                const newQuantity = $(this).val();
+        
+                // Animate the row to indicate update
+                productRow.addClass('bg-gray-50');
+                setTimeout(() => {
+                    productRow.removeClass('bg-gray-50');
+                }, 300);
+        
+                // AJAX call to update quantity
+                $.ajax({
+                    url: "{% url 'aggiorna_quantita' %}",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        product_id: productId,
+                        taglia_id: tagliaId, // Aggiunto il parametro taglia
+                        quantity: newQuantity
+                    }),
+                    contentType: 'application/json',
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken')
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update cart total
+                            const cartTotal = parseFloat(response.cart_total || 0);
+                            $('#cart-total, #cart-subtotal').text(cartTotal.toFixed(2));
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Errore:', error);
+                        alert('Si è verificato un errore. Riprova.');
+                    }
+                });
+            });
+        });
+        
+        const rimuoviDalCarrelloUrl = "{% url 'rimuovi_dal_carrello' %}";
+            // Remove button functionality
+        $('.remove-button').on('click', function() {
+                const productRow = $(this).closest('[data-product-id]');
+                const productId = productRow.data('product-id');
+                const tagliaId = productRow.data('taglia-id');
+                const csrftoken = Cookies.get('csrftoken');
+                
+                productRow.addClass('opacity-50');
+                
+                // Invia richiesta AJAX per rimuovere il prodotto dal carrello
+                fetch(rimuoviDalCarrelloUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        taglia_id: tagliaId,
+                        quantity: 1
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Errore nella richiesta');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        setTimeout(() => {
+                            productRow.slideUp(300, function() {
+                                $(this).remove();
+                                
+                                // Aggiorna il totale del carrello
+                                if (data.new_total !== undefined) {
+                                    $('#cart-total').text('€' + data.new_total.toFixed(2));
+                                }
+                                
+                                // Check if cart is empty
+                                if (data.empty_cart || $('[data-product-id]').length === 0) {
+                                    $('#cart-container').html(`
+                                        <div class="text-center py-8">
+                                            <i class="fas fa-shopping-bag text-5xl text-gray-300 mb-4"></i>
+                                            <p class="text-gray-500">Il tuo carrello è vuoto</p>
+                                            <a href="{% url 'index' %}" class="inline-block mt-4 text-white bg-gray-800 hover:bg-gray-700 px-6 py-2 rounded-lg transition-colors duration-300">Inizia lo Shopping</a>
+                                        </div>
+                                    `);
+                                }
+                            });
+                        }, 200);
+                    } else {
+                        // Mostra messaggio di errore
+                        productRow.removeClass('opacity-50');
+                        alert(data.message || 'Si è verificato un errore durante la rimozione del prodotto.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    productRow.removeClass('opacity-50');
+                    alert('Si è verificato un errore durante la rimozione del prodotto. Riprova più tardi.');
+                });
+            });
+
+
+    </script>
+</body>
+</html>

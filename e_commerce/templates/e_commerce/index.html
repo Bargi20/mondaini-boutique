@@ -1,0 +1,538 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Home | Mondaini Boutique {% endblock %}
+
+{% block extra_css %}
+    <style>
+        .filters-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .product-category {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        
+        .search-filter, .category-filter {
+            margin: 10px 0;
+        }
+        
+        .form-control:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+        
+        .no-products, .error-message {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .no-products i, .error-message i {
+            font-size: 3em;
+            color: #d4af37;
+            margin-bottom: 20px;
+        }
+        
+        .loading {
+            padding: 40px;
+            color: #d4af37;
+        }
+
+        .pagination-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pagination-controls button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-controls button:not(:disabled):hover {
+            background-color: #d4af37;
+            border-color: #d4af37;
+            color: white;
+        }
+        
+        .pagination-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        /* Animazione per il cambio pagina */
+        .products-container {
+            transition: opacity 0.3s ease;
+        }
+        
+        .products-container.loading {
+            opacity: 0.5;
+        }
+        
+        /* Stile per i numeri di pagina */
+        #current-page {
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+
+        
+
+        #infinite-scroll-loader {
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        #infinite-scroll-loader .spinner {
+            display: inline-block;
+        }
+        
+        .loading {
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .loading i {
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .product-card {
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* Animazione per il loader */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
+
+    </style>
+    {% endblock %}
+
+{% block content %}
+<body>
+    <!-- hero section start -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hero-content text-center">
+                        <h1>Eleganza e Stile</h1>
+                        <p>Scopri la nuova collezione Mondaini Boutique</p>
+                        <a href="#categories" class="btn shop-now-btn">Scopri Ora</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- hero section end -->
+
+    <!-- categories section start -->
+    <section id="categories" class="categories-section">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Categorie</h2>
+                <p>Esplora la nostra collezione per ogni stile</p>
+            </div>
+            <div class="row">
+                <!-- Card Uomo -->
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="category-card">
+                        <a href="#" class="category-link" data-tipo="uomo">
+                            <div class="category-img">
+                                <img src="{% static 'images/Uomo.jpg' %}" alt="Uomo" class="img-fluid image-card">
+                                <div class="category-overlay">
+                                    <h3>Uomo</h3>
+                                    <span class="view-more">Scopri di più</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Card Donna -->
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="category-card">
+                        <a href="#" class="category-link" data-tipo="donna">
+                            <div class="category-img">
+                                <img src="{% static 'images/donna.jpg' %}" alt="Donna" class="img-fluid image-card">
+                                <div class="category-overlay">
+                                    <h3>Donna</h3>
+                                    <span class="view-more">Scopri di più</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Card Bambino -->
+                <div class="col-lg-4 col-md-4 col-sm-12">
+                    <div class="category-card">
+                        <a href="#" class="category-link" data-tipo="bambino">
+                            <div class="category-img">
+                                <img src="{% static 'images/Bambino.jpg' %}" alt="Bambino" class=" img-fluid image-card"> 
+                                <div class="category-overlay">
+                                    <h3>Bambino</h3>
+                                    <span class="view-more">Scopri di più</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- categories section end -->
+
+    <!-- products section start -->
+    <section id="products-section" class="products-section" style="display: none;">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2 id="collection-title">Collezione</h2>
+                <p>Scopri i nostri prodotti selezionati per te</p>
+            </div>
+
+            <!-- Filtro per la ricerca e le categorie -->
+            <div class="filters-section mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="search-filter">
+                            <input type="text" 
+                                   id="product-search" 
+                                   class="form-control" 
+                                   placeholder="Cerca per nome..."
+                                   style="border-radius: 20px; padding: 10px 20px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="category-filter">
+                            <select id="category-select" 
+                                    class="form-control"
+                                    style="border-radius: 20px; padding: 10px 20px;">
+                                <option value="">Tutte le categorie</option>
+                                <option value="pantaloni">Pantaloni</option>
+                                <option value="tshirt">T-shirt</option>
+                                <option value="cappotti">Cappotti</option>
+                                <option value="camicie">Camicie</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="products-container">
+                <!-- I prodotti verranno caricati qui dinamicamente -->
+            </div>
+                <!-- impaginazione -->
+            <div class="pagination-container text-center mt-4" style="display: none;">
+                <div class="pagination-info mb-3">
+                    <span class="text-muted">
+                        Mostrando <span id="current-page-info">0</span> di <span id="total-pages-info">0</span> pagine
+                        (<span id="total-products-info">0</span> prodotti totali)
+                    </span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prev-page" class="btn btn-outline-secondary" disabled>
+                        <i class="fas fa-chevron-left"></i> Precedente
+                    </button>
+                    <span class="mx-3">
+                        Pagina <span id="current-page">1</span>
+                    </span>
+                    <button id="next-page" class="btn btn-outline-secondary" disabled>
+                        Successiva <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <!-- products section end -->
+
+    <!-- features section start -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h4>Spedizione Gratuita</h4>
+                        <p>Per ordini superiori a €50</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <h4>Resi Gratuiti</h4>
+                        <p>Entro 30 giorni dall'acquisto</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h4>Pagamento Sicuro</h4>
+                        <p>Transazioni protette al 100%</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4>Supporto 24/7</h4>
+                        <p>Assistenza clienti dedicata</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- features section end -->
+
+    <!-- newsletter section start -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6">
+                    <div class="newsletter-content">
+                        <h3>Iscriviti alla Newsletter</h3>
+                        <p>Ricevi in anteprima le nostre offerte e novità</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="newsletter-form">
+                        <form action="#" method="post">
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="La tua email" required>
+                                <div class="input-group-append">
+                                    <button class="btn subscribe-btn" type="submit">Iscriviti</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- newsletter section end -->
+    {% endblock %}
+    {% block extra_js %}
+    <script>
+        $(document).ready(function() {
+            let currentType = null;
+            let searchTimeout = null;
+            let currentPage = 1;
+            let isLoading = false;
+            let hasMore = true;
+        
+            // Funzione per mostrare il loader iniziale
+            function showInitialLoader() {
+                $('#products-container').html(`
+                    <div class="col-12 text-center">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin fa-3x"></i>
+                            <p>Caricamento prodotti...</p>
+                        </div>
+                    </div>
+                `);
+            }
+        
+            // Funzione per renderizzare i prodotti
+            function renderProducts(prodotti, append = false) {
+                let html = '';
+                prodotti.forEach(function(prodotto) {
+                    html += `
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="product-card">
+                                <div class="product-img">
+                                    <a href="${prodotto.url}">
+                                        ${prodotto.immagine_url ? 
+                                            `<img src="${prodotto.immagine_url}" alt="${prodotto.nome}" class="img-fluid">` : 
+                                            '<div class="no-img">Immagine non disponibile</div>'}
+                                    </a>
+                                    <div class="product-actions">
+                                        <a href="${prodotto.url}" class="view-details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <h4>${prodotto.nome}</h4>
+                                    <p class="product-category">${prodotto.categoria}</p>
+                                    <div class="price">€ ${prodotto.prezzo}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+        
+                if (append) {
+                    $('#products-container').append(html);
+                } else {
+                    $('#products-container').html(html);
+                }
+            }
+        
+            // Funzione per caricare i prodotti
+            function loadProducts(append = false) {
+                if (isLoading || (!hasMore && append)) return;
+        
+                isLoading = true;
+                if (!append) {
+                    showInitialLoader();
+                }
+                $('#infinite-scroll-loader').show();
+        
+                const categoria = $('#category-select').val();
+                const search = $('#product-search').val();
+        
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'GET',
+                    data: {
+                        tipo: currentType,
+                        categoria: categoria,
+                        search: search,
+                        page: append ? currentPage + 1 : 1
+                    },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        if (response.prodotti) {
+                            if (append) {
+                                renderProducts(response.prodotti, true);
+                                currentPage++;
+                            } else {
+                                renderProducts(response.prodotti, false);
+                                currentPage = 1;
+                            }
+                            hasMore = response.has_more;
+                        } else {
+                            if (!append) {
+                                $('#products-container').html(`
+                                    <div class="col-12 text-center">
+                                        <p>Nessun prodotto trovato.</p>
+                                    </div>
+                                `);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Errore:', error);
+                        if (!append) {
+                            $('#products-container').html(`
+                                <div class="col-12 text-center">
+                                    <p>Si è verificato un errore durante il caricamento dei prodotti.</p>
+                                </div>
+                            `);
+                        }
+                    },
+                    complete: function() {
+                        isLoading = false;
+                        $('#infinite-scroll-loader').hide();
+                    }
+                });
+            }
+        
+            // Gestione scroll infinito
+            $(window).scroll(function() {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
+                    if (hasMore && !isLoading) {
+                        loadProducts(true);
+                    }
+                }
+            });
+        
+            // Gestione click sui link delle categorie
+            $('.category-link').click(function(e) {
+                e.preventDefault();
+                currentType = $(this).data('tipo');
+                currentPage = 1;
+                hasMore = true;
+                
+                $('#products-section').show();
+                
+                // Scroll alla sezione prodotti
+                $('html, body').animate({
+                    scrollTop: $('#products-section').offset().top - 100
+                }, 500);
+                
+                // Aggiorna il titolo
+                let titoloCollezione = 'Collezione';
+                switch(currentType) {
+                    case 'uomo':
+                        titoloCollezione += ' Uomo';
+                        break;
+                    case 'donna':
+                        titoloCollezione += ' Donna';
+                        break;
+                    case 'bambino':
+                        titoloCollezione += ' Bambino';
+                        break;
+                }
+                $('#collection-title').text(titoloCollezione);
+                
+                // Resetta i filtri
+                $('#category-select').val('');
+                $('#product-search').val('');
+                
+                // Carica i prodotti
+                loadProducts(false);
+            });
+        
+            // Gestione cambio categoria nel select
+            $('#category-select').change(function() {
+                currentPage = 1;
+                hasMore = true;
+                loadProducts(false);
+            });
+        
+            // Gestione ricerca con debounce
+            $('#product-search').on('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    currentPage = 1;
+                    hasMore = true;
+                    loadProducts(false);
+                }, 300);
+            });
+        });
+        </script>
+        {% endblock %}
+        
+</body>

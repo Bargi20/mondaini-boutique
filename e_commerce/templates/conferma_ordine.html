@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Conferma Ordine | Mondaini Boutique{% endblock %}
+
+{% block extra_css %}
+   <link rel="stylesheet" href="{% static 'css/conferma_ordine.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    
+
+    <!-- order confirmation section start -->
+    <section class="order-confirmation">
+        <div class="container">
+            <div class="confirmation-header">
+                {% if pagamento_completato %}
+                <i class="fas fa-check-circle"></i>
+                <h1>Grazie per il tuo ordine!</h1>
+                <p>Il tuo ordine è stato confermato e verrà spedito a breve.</p>
+                {% else %}
+                <i class="fas fa-clock" style="color: #ff9800;"></i>
+                <h1>Ordine in attesa di pagamento</h1>
+                <p>Il tuo ordine è stato ricevuto ma è in attesa di conferma del pagamento.</p>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="order-details">
+                        <h2>Dettagli dell'ordine</h2>
+                        <div class="order-info">
+                            <div class="order-info-item">
+                                <h4>Numero Ordine</h4>
+                                <p>{{ numero_ordine }}</p>
+                            </div>
+                            <div class="order-info-item">
+                                <h4>Data</h4>
+                                <p>{{ data_ordine }}</p>
+                            </div>
+                            <div class="order-info-item">
+                                <h4>Stato</h4>
+                                <p>
+                                    {% if pagamento_completato %}
+                                    <span class="order-status status-shipped">Spedito</span>
+                                    {% else %}
+                                    <span class="order-status status-pending">In attesa</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="order-info-item">
+                                <h4>Indirizzo di spedizione</h4>
+                                <p>{{ ordine.delivery_address }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="order-products">
+                        <h2>Prodotti ordinati</h2>
+                        {% for prodotto in ordini_prodotti %}
+                        <div class="product-item">
+                            {% if prodotto.image_url %}
+                            <img src="{{ prodotto.image_url }}" alt="{{ prodotto.product_name }}" class="product-image">
+                            {% else %}
+                            <div class="product-image" style="background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="color: #ccc; font-size: 24px;"></i>
+                            </div>
+                            {% endif %}
+                            <div class="product-info">
+                                <div class="product-name">{{ prodotto.product_name }}</div>
+                                <div class="product-details">
+                                    Categoria: {{ prodotto.product_category }} | 
+                                    Taglia: {{ prodotto.taglia_nome }} | 
+                                    Quantità: {{ prodotto.quantity }}
+                                </div>
+                            </div>
+                            <div class="product-price">€{{ prodotto.product.prezzo }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="order-summary">
+                        <h2>Riepilogo ordine</h2>
+                        <div class="summary-row">
+                            <span>Subtotale</span>
+                            <span>€{{ totale }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Spedizione</span>
+                            <span>Gratuita</span>
+                        </div>
+                        {% if ordine.discount %}
+                        <div class="summary-row">
+                            <span>Sconto</span>
+                            <span>-€{{ ordine.discount }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="summary-row total">
+                            <span>Totale</span>
+                            <span>€{{ totale }}</span>
+                        </div>
+                    </div>
+
+                    {% if pagamento_completato %}
+                    <div class="thank-you-message">
+                        <h3>Grazie per il tuo acquisto!</h3>
+                        <p>Riceverai un'email di conferma con i dettagli del tuo ordine e le informazioni di spedizione.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'index' %}" class="btn-continue">Continua lo shopping</a>
+            </div>
+        </div>
+    </section>
+    <!-- order confirmation section end -->
+
+    {% endblock %}
+
+    {% block extra_js %}
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "300px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+        // Back to top button
+        const backToTopButton = document.getElementById("backToTop");
+        
+        window.addEventListener("scroll", () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add("show");
+            } else {
+                backToTopButton.classList.remove("show");
+            }
+        });
+        
+        backToTopButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

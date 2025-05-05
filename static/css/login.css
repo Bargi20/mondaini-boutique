@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f4ef;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+.login-container {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.9) 50%, transparent 100%), url('/static/images/banner.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.form-input:focus {
+    border-color: #333;
+    box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
+}
+
+.btn-primary {
+    background-color: #333;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+}
+
+.home-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.home-link:hover {
+    transform: scale(1.1);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #777;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider::before {
+    margin-right: 1em;
+}
+
+.divider::after {
+    margin-left: 1em;
+}
+
+.social-btn {
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+}

@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Contattaci | Mondaini Botique{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/contattaci.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+
+
+    <!-- page header start -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Contattaci</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Contattaci</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- page header end -->
+
+    <!-- contact section start -->
+    <section class="contact-section">
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="row mb-5">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="contact-info-box text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4>Indirizzo</h4>
+                        <p> Via Nino Bixio, 57 <br>Falconara Marittima AN, 60015<br>Italia</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="contact-info-box text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <h4>Telefono</h4>
+                        <p>+39 3406421538</p>
+                        <p>+39 02 1234567</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="contact-info-box text-center">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4>Email</h4>
+                        <p>info@mondainiboutique.it</p>
+                        <p>supporto@mondainiboutique.it</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="contact-form">
+                        <h3 class="mb-4">Inviaci un messaggio</h3>
+                        <form action="{% url 'contattaci' %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="nome" placeholder="Nome" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control" name="email" placeholder="Email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="oggetto" placeholder="Oggetto" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" name="messaggio" rows="5" placeholder="Messaggio" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="privacy" id="privacy" required>
+                                    <label class="form-check-label" for="privacy">
+                                        Acconsento al trattamento dei dati personali secondo la Privacy Policy
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-btn">Invia Messaggio</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="contact-info-box h-100">
+                        <h3 class="mb-4">Orari di apertura</h3>
+                        <div class="business-hours">
+                            <p><span>Lunedì - Venerdì:</span> <span>9:00 - 19:00</span></p>
+                            <p><span>Sabato:</span> <span>9:00 - 18:00</span></p>
+                            <p><span>Domenica:</span> <span>Chiuso</span></p>
+                        </div>
+                        
+                        <h3 class="mt-5 mb-4">Seguici sui social</h3>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                        </div>
+                        
+                        <h3 class="mt-5 mb-4">Visita il nostro negozio</h3>
+                        <p>Vieni a trovarci nel nostro negozio fisico per scoprire l'intera collezione e ricevere consulenza personalizzata dai nostri esperti di moda.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d23103.265738685957!2d13.376925998202008!3d43.62926921402285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132d785d94faaa87%3A0x3b0effd30298de61!2sMondaini%20Boutique!5e0!3m2!1sit!2sit!4v1745829856165!5m2!1sit!2sit" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- contact section end -->
+
+    <!-- newsletter section start -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6">
+                    <div class="newsletter-content">
+                        <h3>Iscriviti alla Newsletter</h3>
+                        <p>Ricevi in anteprima le nostre offerte e novità</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="newsletter-form">
+                        <form action="#" method="post">
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="La tua email" required>
+                                <div class="input-group-append">
+                                    <button class="btn subscribe-btn" type="submit">Iscriviti</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- newsletter section end -->
+
+    {% endblock %}
+
+    
+    {% block extra_js %}
+    <script>
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Back to top button
+        const backToTopButton = document.getElementById("backToTop");
+        
+        window.addEventListener("scroll", () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add("show");
+            } else {
+                backToTopButton.classList.remove("show");
+            }
+        });
+        
+        backToTopButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione | Mondaini Boutique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 py-10">
+    <!-- Home Link -->
+    <a href="{% url 'index' %}" class="home-link bg-white p-3 rounded-full shadow-md flex items-center justify-center">
+        <i class="fas fa-home text-gray-800 text-xl"></i>
+    </a>
+    
+    <!-- Main Container -->
+    <div class="registration-container w-full max-w-5xl rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        <!-- Left Side - Form -->
+        <div class="w-full md:w-3/5 p-8 md:p-10 bg-white">
+            <div class="text-center mb-6">
+                <img src="{% static 'images/LogoSito.png' %}" alt="Mondaini Boutique" class="h-16 mx-auto mb-4">
+                <h1 class="text-3xl font-bold text-gray-800">Crea il tuo account</h1>
+                <p class="text-gray-500 mt-2">Unisciti alla famiglia Mondaini Boutique</p>
+            </div>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                
+                <!-- Dati personali -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="nome" class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" name="nome" id="nome" value="{{ form_data.nome|default:'' }}" required 
+                                   class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                   placeholder="Il tuo nome">
+                        </div>
+                        <div id="nome_error" class="error-message"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="cognome" class="block text-sm font-medium text-gray-700 mb-1">Cognome</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" name="cognome" id="cognome" value="{{ form_data.cognome|default:'' }}" required 
+                                   class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                   placeholder="Il tuo cognome">
+                        </div>
+                        <div id="cognome_error" class="error-message"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="indirizzo" class="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-map-marker-alt text-gray-400"></i>
+                        </div>
+                        <input type="text" name="indirizzo" id="indirizzo" value="{{ form_data.indirizzo|default:'' }}" required 
+                               class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                               placeholder="Il tuo indirizzo completo">
+                    </div>
+                    <div id="indirizzo_error" class="error-message"></div>
+                </div>
+                
+                <div>
+                    <label for="numero_di_telefono" class="block text-sm font-medium text-gray-700 mb-1">Numero di telefono</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-phone text-gray-400"></i>
+                        </div>
+                        <input type="tel" name="numero_di_telefono" id="numero_di_telefono" value="{{ form_data.numero_di_telefono|default:'' }}" required 
+                               class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                               placeholder="Es. 3401234567">
+                    </div>
+                    <div id="numero_di_telefono_error" class="error-message"></div>
+                </div>
+                
+                <!-- Dati account -->
+                <div class="pt-2">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-3">Informazioni account</h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-at text-gray-400"></i>
+                                </div>
+                                <input type="text" name="username" id="username" value="{{ form_data.username|default:'' }}" required 
+                                       class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                       placeholder="Scegli un username">
+                            </div>
+                            <div id="username_error" class="error-message"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-envelope text-gray-400"></i>
+                                </div>
+                                <input type="email" name="email" id="email" value="{{ form_data.email|default:'' }}" required 
+                                       class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                       placeholder="La tua email">
+                            </div>
+                            <div id="email_error" class="error-message"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" name="password" id="password" required 
+                                       class="form-input block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                       placeholder="Crea una password sicura">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" id="togglePassword" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-1 flex space-x-1">
+                                <div class="password-strength bg-gray-200 flex-1 rounded-full"></div>
+                                <div class="password-strength bg-gray-200 flex-1 rounded-full"></div>
+                                <div class="password-strength bg-gray-200 flex-1 rounded-full"></div>
+                                <div class="password-strength bg-gray-200 flex-1 rounded-full"></div>
+                            </div>
+                            <div id="password_error" class="error-message"></div>
+                        </div>
+                        
+                        <div>
+                            <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Conferma Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" name="confirm_password" id="confirm_password" required 
+                                       class="form-input block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+                                       placeholder="Ripeti la password">
+                            </div>
+                            <div id="confirm_password_error" class="error-message"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center mt-4">
+                    <input type="checkbox" name="privacy" id="privacy" required class="h-4 w-4 text-gray-800 focus:ring-gray-500 border-gray-300 rounded">
+                    <label for="privacy" class="ml-2 block text-sm text-gray-700">
+                        Accetto la <a href="#" class="text-gray-800 font-medium hover:underline">Privacy Policy</a> e i <a href="#" class="text-gray-800 font-medium hover:underline">Termini di Servizio</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white font-medium mt-6">
+                    Crea Account
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Hai già un account? 
+                    <a href="{% url 'login' %}" class="font-medium text-gray-800 hover:underline">Accedi</a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Right Side - Image/Info -->
+        <div class="hidden md:block md:w-2/5 bg-cover bg-center">
+            <div class="h-full flex items-center justify-center p-12 bg-black bg-opacity-40">
+                <div class="text-center text-white">
+                    <h2 class="text-3xl font-bold mb-4">Vantaggi esclusivi</h2>
+                    <ul class="space-y-4 text-left">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                            <span>Accesso a promozioni esclusive</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                            <span>Salva i tuoi articoli preferiti</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                            <span>Checkout più veloce</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-400 mt-1 mr-2"></i>
+                            <span>Ricevi aggiornamenti sulle nuove collezioni</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Toggle password visibility
+            $('#togglePassword').on('click', function() {
+                const passwordInput = document.getElementById('password');
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+            
+            // Password strength indicator
+            $('#password').on('input', function() {
+                const password = $(this).val();
+                let strength = 0;
+                
+                if (password.length >= 8) strength++;
+                if (password.match(/[A-Z]/)) strength++;
+                if (password.match(/[0-9]/)) strength++;
+                if (password.match(/[^A-Za-z0-9]/)) strength++;
+                
+                $('.password-strength').removeClass('bg-red-500 bg-orange-500 bg-yellow-500 bg-green-500').addClass('bg-gray-200');
+                
+                for (let i = 0; i < strength; i++) {
+                    $('.password-strength').eq(i).removeClass('bg-gray-200');
+                    
+                    if (strength === 1) $('.password-strength').eq(i).addClass('bg-red-500');
+                    else if (strength === 2) $('.password-strength').eq(i).addClass('bg-orange-500');
+                    else if (strength === 3) $('.password-strength').eq(i).addClass('bg-yellow-500');
+                    else if (strength === 4) $('.password-strength').eq(i).addClass('bg-green-500');
+                }
+            });
+            
+            // Confirm password validation
+            $('#confirm_password').on('input', function() {
+                const password = $('#password').val();
+                const confirmPassword = $(this).val();
+                
+                if (confirmPassword === '') {
+                    $('#confirm_password_error').text('');
+                } else if (password !== confirmPassword) {
+                    $('#confirm_password_error').text('Le password non corrispondono');
+                } else {
+                    $('#confirm_password_error').text('');
+                }
+            });
+            
+            // Funzione per convalidare un singolo campo
+            function validateField(field) {
+                const name = $(field).attr('name');
+                const value = $(field).val();
+                
+                if (name === 'confirm_password') {
+                    const password = $('#password').val();
+                    if (password !== value) {
+                        $(`#${name}_error`).text('Le password non corrispondono');
+                        $(field).removeClass('valid-field').addClass('invalid-field');
+                        return;
+                    } else {
+                        $(`#${name}_error`).text('');
+                        $(field).removeClass('invalid-field').addClass('valid-field');
+                        return;
+                    }
+                }
+
+                $.ajax({
+                    url: "{% url 'validate_field_registration' %}", // Vista Django per la validazione
+                    type: "POST",
+                    data: {
+                        'field': name,
+                        'value': value,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        const errorContainer = $(`#${name}_error`);
+                        if (response.is_valid) {
+                            errorContainer.text(''); // Rimuove il messaggio di errore
+                            $(field).removeClass('invalid-field').addClass('valid-field');
+                        } else {
+                            errorContainer.text(response.error); // Mostra il messaggio di errore
+                            $(field).removeClass('valid-field').addClass('invalid-field');
+                        }
+                    }
+                });
+            }
+
+            // Attivare la validazione quando un campo perde il focus
+            $("input").on("blur", function () {
+                validateField(this);
+            });
+
+            // Validazione al submit del form
+            $("form").on("submit", function (e) {
+                e.preventDefault(); // Blocca l'invio del form
+                let isValid = true;
+
+                $("input").each(function () {
+                    validateField(this);
+                    if ($(`#${$(this).attr('name')}_error`).text() !== '') {
+                        isValid = false;
+                    }
+                });
+                
+                // Verifica che la checkbox della privacy sia selezionata
+                if (!$('#privacy').is(':checked')) {
+                    isValid = false;
+                    alert('Devi accettare la Privacy Policy e i Termini di Servizio per continuare.');
+                }
+
+                if (isValid) {
+                    this.submit(); // Invia il form se tutto è valido
+                }
+            });
+        });
+    </script>
+</body>
+</html>

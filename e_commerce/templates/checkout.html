@@ -1,0 +1,319 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Mondaini Botique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.5/js.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Checkout</h1>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left Column: Shipping & Payment Forms -->
+            <div class="w-full lg:w-2/3">
+                <form id="shipping-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="ordine_id" name="ordine_id" value="{{ ordine.id }}">
+                    
+                    <!-- Shipping Information -->
+                    <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informazioni di Spedizione</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                <input type="text" id="first_name" name="first_name" required
+                                    value="{{ form_data.first_name }}"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <div class="text-red-500 text-xs mt-1 hidden error-message" id="first_name-error">Campo obbligatorio</div>
+                            </div>
+                            <div>
+                                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Cognome</label>
+                                <input type="text" id="last_name" name="last_name" required
+                                    value="{{ form_data.last_name }}"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <div class="text-red-500 text-xs mt-1 hidden error-message" id="last_name-error">Campo obbligatorio</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" name="email" required
+                                value="{{ form_data.email }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            <div class="text-red-500 text-xs mt-1 hidden error-message" id="email-error">Inserisci un'email valida</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+                            <input type="tel" id="phone" name="phone" required
+                                value="{{ form_data.phone }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            <div class="text-red-500 text-xs mt-1 hidden error-message" id="phone-error">Campo obbligatorio</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label>
+                            <input type="text" id="address" name="address" required
+                                value="{{ form_data.address }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            <div class="text-red-500 text-xs mt-1 hidden error-message" id="address-error">Campo obbligatorio</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Città</label>
+                                <input type="text" id="city" name="city" required
+                                    value="{{ form_data.city }}"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <div class="text-red-500 text-xs mt-1 hidden error-message" id="city-error">Campo obbligatorio</div>
+                            </div>
+                            <div>
+                                <label for="postal_code" class="block text-sm font-medium text-gray-700 mb-1">CAP</label>
+                                <input type="text" id="postal_code" name="postal_code" required
+                                    value="{{ form_data.postal_code }}"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <div class="text-red-500 text-xs mt-1 hidden error-message" id="postal_code-error">Campo obbligatorio</div>
+                            </div>
+                            <div>
+                                <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Paese</label>
+                                <select id="country" name="country" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                    <option value="IT" {% if form_data.country == 'IT' %}selected{% endif %}>Italia</option>
+                                    <option value="FR" {% if form_data.country == 'FR' %}selected{% endif %}>Francia</option>
+                                    <option value="DE" {% if form_data.country == 'DE' %}selected{% endif %}>Germania</option>
+                                    <option value="ES" {% if form_data.country == 'ES' %}selected{% endif %}>Spagna</option>
+                                    <option value="UK" {% if form_data.country == 'UK' %}selected{% endif %}>Regno Unito</option>
+                                </select>
+                                <div class="text-red-500 text-xs mt-1 hidden error-message" id="country-error">Campo obbligatorio</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Right Column: Order Summary -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-white shadow-lg rounded-xl p-6 sticky top-4">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Riepilogo Ordine</h2>
+                    
+                    <!-- Order Items -->
+                    <div class="max-h-80 overflow-y-auto mb-4">
+                        {% for product in cart_products %}
+                        <div class="flex items-start py-3 border-b">
+                            <img src="{{ product.image_url }}" alt="{{ product.product_name }}" class="w-16 h-20 object-cover rounded-md">
+                            <div class="ml-3 flex-1">
+                                <h3 class="text-sm font-medium text-gray-800">{{ product.product_name }} </h3>
+                                <p class="text-xs text-gray-500">{{ product.product_categoria }}</p>
+                                <p class="text-xs text-gray-500">{{ product.taglia_nome }}</p>
+
+                                <div class="flex justify-between mt-1">
+                                    <span class="text-xs">Qtà: {{ product.quantity }}</span>
+                                    <span class="text-sm font-medium">€{{ product.product_prezzo }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Order Totals -->
+                    <div class="space-y-2 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Subtotale</span>
+                            <span>€{{ cart_total }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Spedizione</span>
+                            <span class="text-green-600">Gratuita</span>
+                        </div>
+                        {% if discount %}
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Sconto</span>
+                            <span class="text-red-600">-€{{ discount }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between text-lg font-bold pt-2 border-t">
+                            <span>Totale</span>
+                            <span>€{{ cart_total }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button id="checkout-button" type="button" disabled
+                        class="w-full bg-gray-400 text-white px-6 py-3 rounded-lg transition-colors flex items-center justify-center cursor-not-allowed">
+                        <span>Paga con Stripe</span>
+                        <i class="fas fa-lock ml-2"></i>
+                    </button>
+                    
+                    <div id="form-error-message" class="text-red-500 text-sm mt-2 text-center hidden">
+                        Compila tutti i campi obbligatori prima di procedere al pagamento
+                    </div>
+                                    
+                    <!-- Back to Cart -->
+                    <a href="{% url 'carrello' %}" class="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors mt-4">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span>Torna al Carrello</span>
+                    </a>
+                    
+                    <!-- Security Notice -->
+                    <div class="mt-6 text-xs text-gray-500 text-center">
+                        <div class="flex justify-center mb-2">
+                            <i class="fas fa-shield-alt text-gray-400 mr-1"></i>
+                            <span>Pagamento sicuro</span>
+                        </div>
+                        <p>I tuoi dati di pagamento sono protetti con crittografia SSL.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Funzione per validare l'email
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            function isValidCAP(cap) {
+                const capRegex = /^[0-9]{5}$/;
+                return capRegex.test(cap);
+            }
+            
+            // Funzione per validare tutti i campi
+            function validateForm() {
+                const requiredFields = [
+                    'first_name', 'last_name', 'email', 'phone', 
+                    'address', 'city', 'postal_code', 'country'
+                ];
+                
+                let isValid = true;
+                
+                // Controlla che tutti i campi siano compilati
+                requiredFields.forEach(field => {
+                    const input = $(`#${field}`);
+                    const errorMsg = $(`#${field}-error`);
+                    
+                    if (!input.val().trim()) {
+                        input.addClass('border-red-500');
+                        errorMsg.removeClass('hidden');
+                        isValid = false;
+                    } else {
+                        input.removeClass('border-red-500');
+                        errorMsg.addClass('hidden');
+                    }
+                });
+                
+                // Validazione specifica per l'email
+                if ($('#email').val().trim() && !isValidEmail($('#email').val())) {
+                    $('#email').addClass('border-red-500');
+                    $('#email-error').removeClass('hidden').text('Inserisci un\'email valida');
+                    isValid = false;
+                }
+
+
+                //validazione del cap
+                if ($('#postal_code').val().trim() && !isValidCAP($('#postal_code').val())) {
+                    $('#postal_code').addClass('border-red-500');
+                    $('#postal_code-error').removeClass('hidden').text('Inserisci un CAP valido');
+                    isValid = false;
+                }
+
+
+                // Abilita o disabilita il pulsante di checkout
+                if (isValid) {
+                    $('#checkout-button')
+                        .prop('disabled', false)
+                        .removeClass('bg-gray-400 cursor-not-allowed')
+                        .addClass('bg-gray-800 hover:bg-gray-700');
+                    $('#form-error-message').addClass('hidden');
+                } else {
+                    $('#checkout-button')
+                        .prop('disabled', true)
+                        .removeClass('bg-gray-800 hover:bg-gray-700')
+                        .addClass('bg-gray-400 cursor-not-allowed');
+                    $('#form-error-message').removeClass('hidden');
+                }
+                
+                return isValid;
+            }
+            
+            // Valida il form quando cambia un campo
+            $('#shipping-form input, #shipping-form select').on('input change', function() {
+                validateForm();
+            });
+            
+            // Valida il form all'avvio
+            validateForm();
+            
+            // Gestisci il click sul pulsante di checkout
+            $('#checkout-button').on('click', function() {
+                if (!validateForm()) {
+                    return;
+                }
+                
+                                
+                // Prima salva i dati di spedizione
+                $.ajax({
+                    url: "{% url 'salva_dati_spedizione' %}",
+                    type: "POST",
+                    data: $('#shipping-form').serialize(),
+                    success: function(response) {
+                        if (response.success) {
+
+                            // Se i dati di spedizione sono stati salvati con successo, procedi con Stripe
+                            $.ajax({
+                                url: "{% url 'processa_ordine' %}",
+                                type: "POST",
+                                data: {
+                                    ordine_id: "{{ ordine.id }}",
+                                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                                },
+                                success: function(response) {
+                                    if (response.success && response.url) {
+                                        // Reindirizza alla pagina di checkout di Stripe
+                                        window.location.href = response.url;
+                                    } else {
+                                        alert("Errore durante il checkout: " + (response.message || "Errore sconosciuto"));
+                                        resetCheckoutButton();
+                                    }
+                                },
+                                error: function(xhr) {
+                                    console.error("Errore:", xhr.responseText);
+                                    alert("Si è verificato un errore durante il checkout. Riprova più tardi.");
+                                    resetCheckoutButton();
+                                }
+                            });
+                        } else {
+                            alert("Errore nel salvataggio dei dati di spedizione: " + (response.message || "Errore sconosciuto"));
+                            resetCheckoutButton();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Errore:", xhr.responseText);
+                        alert("Si è verificato un errore nel salvataggio dei dati di spedizione. Riprova più tardi.");
+                        resetCheckoutButton();
+                    }
+                });
+            });
+            
+            // Funzione per ripristinare il pulsante di checkout
+            function resetCheckoutButton() {
+                $('#checkout-button')
+                    .html('<span>Paga con Stripe</span><i class="fas fa-lock ml-2"></i>')
+                    .prop('disabled', false)
+                    .removeClass('bg-gray-400 cursor-not-allowed')
+                    .addClass('bg-gray-800 hover:bg-gray-700');
+            }
+        });
+    </script>
+</body>
+</html>
