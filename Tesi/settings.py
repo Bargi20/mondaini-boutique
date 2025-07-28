@@ -43,17 +43,17 @@ CONTACT_EMAIL = 'andreabargilli@gmail.com'  # Email dove ricevere i messaggi di 
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'django-insecure-a09&b1)p9xn(1(884d)@y=$63k3i1f=1ue#jn-8)q!m@=i75*8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
 # settings.py
-STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
-STRIPE_WEBHOOK_SECRET = 'whsec_de1ec83177985c56239b2abaf76eb639716954217496f15d82a64fe389b0479f'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51RBuO0RROvhwI11kELx1BNoug48tcGFrjCsiiA7k7UwPC0dr0UFbGID9s9Pofv7JrowyxltNksnWn8VU0Ffza7j100QmOHyNJa'
+STRIPE_SECRET_KEY = '51RBuO0RROvhwI11kUlW3CAUfaDkfzQgOGpuHFb45XtoXtG1vhskXTbsajKHQTbGlIeHtk5ZDOpCMSaZkU4oH1FCg00k4GAPAcR'
+STRIPE_WEBHOOK_SECRET = 'whsec_de1ec83177985c56239b2abaf76eb639716954217496f15d82a64fe389b0479f' 
 
 # Application definition
 

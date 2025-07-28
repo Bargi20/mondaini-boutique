@@ -524,11 +524,6 @@
             const originalText = addToCartBtn.innerHTML;
             addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Aggiungendo...</span>';
         
-            // Log dei dati per il debug
-            console.log("Dati inviati al server:", {
-                product_id: productId,
-                size: selectedSize,
-            });
         
             // Invia i dati al server tramite Ajax
             fetch("{% url 'add_to_cart' %}", {
@@ -574,8 +569,6 @@
                 alert('Si è verificato un errore. Riprova.');
             });
         }
-        
-        
     </script>
 </body>
 </html>

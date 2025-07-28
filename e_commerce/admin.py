@@ -3,6 +3,7 @@ from .models import Prodotto, ProdottoTaglie, Taglia
 from .models import CustomUser
 from .models import ProductImage
 from django.contrib.auth.admin import UserAdmin
+from .models import Ordine
 
 
 
@@ -18,5 +19,6 @@ admin.site.register(Prodotto)
 admin.site.register(ProductImage)
 admin.site.register(Taglia)
 admin.site.register(ProdottoTaglie)
+admin.site.register(Ordine)
 
 

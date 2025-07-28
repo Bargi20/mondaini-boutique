@@ -83,8 +83,6 @@ class Ordine(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
         ('SHIPPED', 'Shipped'),
-        ('DELIVERED', 'Delivered'),
-        ('CANCELLED', 'Cancelled'),
     ]
     
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="orders")

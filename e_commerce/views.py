@@ -69,69 +69,6 @@ def index(request):
         'categorie': Prodotto.CATEGORIE_CHOICES,
     }
     return render(request, 'e_commerce/index.html', context)
-   
-    # Recupera i parametri dalla query string
-    tipo_filtro = request.GET.get('tipo', None)
-    categoria_filtro = request.GET.get('categoria', None)
-    search_query = request.GET.get('search', None)
-    page = request.GET.get('page', 1)
-    per_page = 6  # Numero di prodotti per pagina
-    
-    # Inizia con tutti i prodotti
-    prodotti = Prodotto.objects.all().prefetch_related('images')
-    
-    # Applica i filtri se presenti
-    if tipo_filtro:
-        prodotti = prodotti.filter(tipo=tipo_filtro)
-    
-    if categoria_filtro:
-        prodotti = prodotti.filter(categoria=categoria_filtro)
-    
-    if search_query:
-        prodotti = prodotti.filter(nome__icontains=search_query)
-
-    # Crea il paginatore
-    paginator = Paginator(prodotti, per_page)
-    
-    try:
-        prodotti_paginati = paginator.page(page)
-    except PageNotAnInteger:
-        prodotti_paginati = paginator.page(1)
-    except EmptyPage:
-        prodotti_paginati = paginator.page(paginator.num_pages)
-
-    # Se è una richiesta AJAX, restituisci i dati in formato JSON
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        prodotti_data = []
-        for prodotto in prodotti_paginati:
-            immagine_url = prodotto.images.first().image.url if prodotto.images.exists() else None
-            prodotti_data.append({
-                'id': prodotto.id,
-                'nome': prodotto.nome,
-                'prezzo': str(prodotto.prezzo),
-                'categoria': prodotto.get_categoria_display(),
-                'immagine_url': immagine_url,
-                'url': request.build_absolute_uri(reverse('dettaglio_prodotto', args=[prodotto.id]))
-            })
-        
-        return JsonResponse({
-            'prodotti': prodotti_data,
-            'has_next': prodotti_paginati.has_next(),
-            'has_previous': prodotti_paginati.has_previous(),
-            'current_page': prodotti_paginati.number,
-            'total_pages': paginator.num_pages,
-            'total_products': paginator.count
-        })
-
-    # Altrimenti, renderizza il template normalmente
-    context = {
-        'prodotti': prodotti_paginati,
-        'tipo_filtro': tipo_filtro,
-        'categorie': Prodotto.CATEGORIE_CHOICES,
-    }
-    return render(request, 'e_commerce/index.html', context)
-
-
 
 # Registrazione
 def register_view(request):
@@ -563,7 +500,7 @@ def rimuovi_dal_carrello(request):
 
         # Verifica che la quantità da rimuovere non sia maggiore di quella nel carrello
         if quantity > ordine_prodotto.quantity:
-            quantity = ordine_prodotto.quantity  # Rimuovi tutto se la quantità richiesta è maggiore
+            quantity = ordine_prodotto.quantity  
 
         # Aggiorna o rimuovi il prodotto dall'ordine
         if ordine_prodotto.quantity > quantity:
@@ -572,9 +509,8 @@ def rimuovi_dal_carrello(request):
         else:
             ordine_prodotto.delete()
 
-        # IMPORTANTE: Incrementa la quantità disponibile della taglia (+1 per ogni unità rimossa)
-        # Questo è il passaggio che ripristina la disponibilità del prodotto
-        prodotto_taglia.quantita += quantity  # Fa +1 (o +quantity) alla quantità disponibile
+        # passaggio che ripristina la disponibilità del prodotto
+        prodotto_taglia.quantita += quantity 
         prodotto_taglia.save()
 
         # Aggiorna il totale dell'ordine
@@ -699,7 +635,6 @@ def stripe_webhook(request):
                 prodotto_ordine.update(stato=True)
 
                 
-                # Qui puoi aggiungere altre azioni come inviare email di conferma, ecc.
                 
             except Ordine.DoesNotExist:
                 return JsonResponse({'error': 'Ordine non trovato'}, status=404)
@@ -721,38 +656,38 @@ def conferma_ordine(request, ordine_id):
         
         if session_id and success and ordine.stripe_session_id == session_id:
             # Il pagamento è stato completato con successo
-            if ordine.status != 'SHIPPED':  # Verifica che l'ordine non sia già stato processato
+            if ordine.status != 'SHIPPED':  
                 ordine.status = 'SHIPPED'
                 ordine.save()
                 try: 
                     subject = f'Conferma Ordine #{ordine.id:06d} - Mondaini Boutique'
-                    
+
                     message = f"""
-Gentile {request.user.nome} {request.user.cognome},
+                    Gentile {request.user.nome} {request.user.cognome},
 
-Grazie per il tuo ordine!
+                    Grazie per il tuo ordine!
 
-Dettagli dell'ordine:
-Numero ordine: ORD-{ordine.id:06d}
-Data: {ordine.order_date.strftime('%d/%m/%Y')}
-Totale: €{ordine.total_amount}
+                    Dettagli dell'ordine:
+                    Numero ordine: ORD-{ordine.id:06d}
+                    Data: {ordine.order_date.strftime('%d/%m/%Y')}
+                    Totale: €{ordine.total_amount}
 
-Prodotti ordinati:
-"""
+                    Prodotti ordinati:
+                    """
                     
                     # Aggiungi i prodotti al messaggio
                     for prodotto in ordine_prodotti:
                         message += f"- {prodotto.product.nome} (Taglia: {prodotto.taglia.nome}) x{prodotto.quantity}: €{prodotto.product.prezzo}\n"
                     
                     message += f"""
-Il tuo ordine verrà spedito a breve all'indirizzo:
-{ordine.delivery_address}
+                    Il tuo ordine verrà spedito a breve all'indirizzo:
+                    {ordine.delivery_address}
 
-Per qualsiasi domanda, non esitare a contattarci.
+                    Per qualsiasi domanda, non esitare a contattarci.
 
-Cordiali saluti,
-Il team di Mondaini Boutique
-"""
+                    Cordiali saluti,
+                    Il team di Mondaini Boutique
+                    """
                     # Invia l'email
                     send_mail(
                         subject,
