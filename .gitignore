@@ -29,6 +29,8 @@ media
 
 secrets.json
 credentials.json
+#env
+.env
 
 # IDE
 .idea/
